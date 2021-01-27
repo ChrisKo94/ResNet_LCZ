@@ -13,8 +13,8 @@ from models.resnet import resnet50
 from utils.dataset import Dataset
 from utils.early_stopping import EarlyStopping
 
-#path_data = "/data/lcz42_votes/data/"
-path_data = "E:/Dateien/LCZ Votes/"
+path_data = "/data/lcz42_votes/data/"
+#path_data = "E:/Dateien/LCZ Votes/"
 
 train_data = h5py.File(path_data + "train_data.h5",'r')
 x_train = np.array(train_data.get("x"))
