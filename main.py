@@ -54,6 +54,8 @@ learning_rate = 0.001
 patience = 20
 batch_size = 256
 
+PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet50_b" + str(batch_size) + "_e_" + str(n_epochs) + "_weightdecay"
+
 train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size = batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size = batch_size, shuffle=False)
 
@@ -71,7 +73,7 @@ def train_model(model, batch_size, patience, n_epochs):
     avg_train_losses = []
     avg_valid_losses = []
 
-    early_stopping = EarlyStopping(patience=patience, verbose=True)
+    early_stopping = EarlyStopping(patience=patience, verbose=True, path=PATH + 'checkpoint.pt')
 
     for i in range(n_epochs):
         trn_corr = 0
@@ -145,14 +147,12 @@ def train_model(model, batch_size, patience, n_epochs):
             break
 
     # load the last checkpoint with the best model
-    model.load_state_dict(torch.load('checkpoint.pt'))
+    model.load_state_dict(torch.load(PATH + 'checkpoint.pt'))
 
     return model, avg_train_losses, avg_valid_losses
 
 start_time = time.time()
 model, train_loss, valid_loss = train_model(model, batch_size, patience, n_epochs)
 print(f'\nDuration: {time.time() - start_time:.0f} seconds')  # print the time elapsed
-
-PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet50_b" + str(batch_size) + "_e_" + str(n_epochs) + "_weightdecay"
 
 torch.save(model.state_dict(), PATH)
