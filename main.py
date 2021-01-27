@@ -73,7 +73,7 @@ def train_model(model, batch_size, patience, n_epochs):
 
     early_stopping = EarlyStopping(patience=patience, verbose=True)
 
-    for i in range(epochs):
+    for i in range(n_epochs):
         trn_corr = 0
         tst_corr = 0
 
