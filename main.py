@@ -50,8 +50,8 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.001
-patience = 10
+learning_rate = 0.01
+patience = 15
 batch_size = 256
 
 train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size = batch_size, shuffle=True)
@@ -153,6 +153,6 @@ start_time = time.time()
 model, train_loss, valid_loss = train_model(model, batch_size, patience, n_epochs)
 print(f'\nDuration: {time.time() - start_time:.0f} seconds')  # print the time elapsed
 
-PATH = "ResNet50_b" + batch_size + "_e_" + n_epochs + "_weightdecay"
+PATH = "ResNet50_b" + str(batch_size) + "_e_" + str(n_epochs) + "_weightdecay"
 
 torch.save(model.state_dict(), PATH)
