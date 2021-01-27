@@ -13,8 +13,8 @@ from models.resnet import resnet50
 from utils.dataset import Dataset
 from utils.early_stopping import EarlyStopping
 
-path_data = "/data/lcz42_votes/data/"
-#path_data = "D:/Data/LCZ Votes/"
+#path_data = "/data/lcz42_votes/data/"
+path_data = "E:/Dateien/LCZ Votes/"
 
 train_data = h5py.File(path_data + "train_data.h5",'r')
 x_train = np.array(train_data.get("x"))
@@ -51,7 +51,7 @@ y_test = y_test[idx].view(y_test.size())
 # set parameters
 n_epochs = 100
 learning_rate = 0.001
-patience = 8
+patience = 10
 batch_size = 256
 
 train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size = batch_size, shuffle=True)
@@ -77,11 +77,10 @@ def train_model(model, batch_size, patience, n_epochs):
         trn_corr = 0
         tst_corr = 0
 
+        model.train()
         # Run the training batches
         for b, (X_train, Y_train) in enumerate(train_loader):
             b += 1
-            # Learning rate decay
-            scheduler.step()
 
             X_train, Y_train = X_train.to(device, dtype=torch.float), Y_train.to(device)
 
@@ -99,9 +98,13 @@ def train_model(model, batch_size, patience, n_epochs):
             loss.backward()
             optimizer.step()
 
+            # Learning rate decay
+            scheduler.step()
+
             train_losses.append(loss.item())
             train_correct.append(trn_corr)
 
+        model.eval()
         # Run the testing batches
         with torch.no_grad():
             for b, (X_test, Y_test) in enumerate(test_loader):
@@ -109,13 +112,15 @@ def train_model(model, batch_size, patience, n_epochs):
 
                 # Apply the model
                 y_val = model.forward(X_test)
+                loss = criterion(y_val, torch.max(Y_test, 1)[1])
 
                 # Tally the number of correct predictions
                 predicted = torch.max(y_val.data, 1)[1]
-                tst_corr += (predicted == torch.max(Y_test, 1)[1]).sum()
+                batch_corr = (predicted == torch.max(Y_test, 1)[1]).sum()
+                tst_corr += batch_corr
 
-                loss = criterion(y_val, torch.max(Y_test, 1)[1])
-                test_losses.append(loss)
+
+                test_losses.append(loss.item())
                 test_correct.append(tst_corr)
 
         # calculate average loss over an epoch
