@@ -50,9 +50,9 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.001
+learning_rate = 0.01
 patience = 20
-batch_size = 64
+batch_size = 32
 
 PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet50_b" + str(batch_size) + "_e_" + str(n_epochs) + "_weightdecay"
 
@@ -156,5 +156,5 @@ model, train_loss, valid_loss = train_model(model, batch_size, patience, n_epoch
 print(f'\nDuration: {time.time() - start_time:.0f} seconds')  # print the time elapsed
 
 torch.save(model.state_dict(), PATH)
-save("/data/lcz42_votes/ResNet_LCZ/train_loss.npy", train_loss)
-save("/data/lcz42_votes/ResNet_LCZ/test_loss.npy", valid_loss)
+np.save("/data/lcz42_votes/ResNet_LCZ/train_loss.npy", train_loss)
+np.save("/data/lcz42_votes/ResNet_LCZ/test_loss.npy", valid_loss)
