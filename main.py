@@ -62,7 +62,7 @@ test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size = 
 
 optimizer = optim.Adam(params = model.parameters(), lr = learning_rate)
 criterion = nn.CrossEntropyLoss()
-scheduler = StepLR(optimizer, step_size=2, gamma=0.75)
+scheduler = StepLR(optimizer, step_size=2, gamma=0.8)
 
 def train_model(model, batch_size, patience, n_epochs):
 
@@ -156,3 +156,5 @@ model, train_loss, valid_loss = train_model(model, batch_size, patience, n_epoch
 print(f'\nDuration: {time.time() - start_time:.0f} seconds')  # print the time elapsed
 
 torch.save(model.state_dict(), PATH)
+save("/data/lcz42_votes/ResNet_LCZ/train_loss.npy", train_loss)
+save("/data/lcz42_votes/ResNet_LCZ/test_loss.npy", valid_loss)
