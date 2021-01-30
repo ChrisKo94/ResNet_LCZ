@@ -1,8 +1,6 @@
 import numpy as np
 import h5py
 import time
-import os
-import sys
 
 import torch
 import torch.nn as nn
@@ -50,7 +48,7 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.01
+learning_rate = 0.001
 patience = 20
 batch_size = 32
 
