@@ -48,9 +48,9 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.01
+learning_rate = 0.001
 patience = 20
-batch_size = 512
+batch_size = 1024
 
 PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet50_b" + str(batch_size) + "_e_" + str(n_epochs) + "_weightdecay"
 
