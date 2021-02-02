@@ -48,7 +48,7 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.0001
+learning_rate = 0.01
 patience = 20
 batch_size = 1024
 
