@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.optim.lr_scheduler import StepLR
+from torch.optim.lr_scheduler import CyclicLR
 
 from models.resnet import resnet18
 from utils.dataset import Dataset
@@ -62,7 +62,7 @@ y_test = y_test[idx].view(y_test.size())
 n_epochs = 100
 learning_rate = 0.01
 patience = 20
-batch_size = 512
+batch_size = 128
 
 PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_weightdecay"
 
@@ -79,7 +79,7 @@ init_label_table = pd.DataFrame({"class":np.arange(1,18), "correct_sum":np.zeros
 
 optimizer = optim.Adam(params = model.parameters(), lr = learning_rate)
 criterion = nn.CrossEntropyLoss(weight=class_weights)
-scheduler = StepLR(optimizer, step_size=2, gamma=0.85)
+scheduler = CyclicLR(optimizer, base_lr=0.001, max_lr=0.01, mode='exp_range', gamma=0.9)
 
 def train_model(model, batch_size, patience, n_epochs):
 
