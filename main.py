@@ -80,7 +80,7 @@ init_label_table = pd.DataFrame({"class":np.arange(1,18), "correct_sum":np.zeros
 optimizer = optim.Adam(params = model.parameters(), lr = learning_rate)
 criterion = nn.CrossEntropyLoss(weight=class_weights)
 scheduler = CyclicLR(optimizer, base_lr=0.001, max_lr=0.01, mode='exp_range', gamma=0.9,
-                     cycle_momentum=True, base_momentum=0.8, max_momentum=0.9)
+                     cycle_momentum=False)
 
 def train_model(model, batch_size, patience, n_epochs):
 
