@@ -191,3 +191,6 @@ class ResNet(nn.Module):
 
 def resnet50(in_channels, n_classes):
     return ResNet(in_channels, n_classes, block=ResNetBottleNeckBlock, depths=[3, 4, 6, 3])
+
+def resnet18(in_channels, n_classes):
+    return ResNet(in_channels, n_classes, block=ResNetBottleNeckBlock, depths=[2, 2, 2, 2])
