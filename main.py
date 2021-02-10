@@ -64,7 +64,7 @@ learning_rate = 0.01
 patience = 20
 batch_size = 128
 
-PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_weightdecay"
+PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_cyclicweightdecay"
 
 train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size = batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size = batch_size, shuffle=False)
@@ -196,7 +196,7 @@ def train_model(model, batch_size, patience, n_epochs):
             break
 
     # load the last checkpoint with the best model
-    model.load_state_dict(torch.load(PATH + 'checkpoint.pt'))
+    model.load_state_dict(torch.load(PATH + '_checkpoint.pt'))
 
     return model, avg_train_losses, avg_valid_losses
 
