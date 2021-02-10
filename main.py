@@ -177,11 +177,11 @@ def train_model(model, batch_size, patience, n_epochs):
         print(
             f'epoch: {i + 1:2} training loss: {train_loss:10.8f} training accuracy: {trn_corr.item() * 100 / len(x_train) :7.3f}%')
         print(
-           f'training kappa: {train_kappa:7.3f} training average accuracy: {train_avg_accuracy:7.3f}%')
+           f'training kappa: {train_kappa:7.3f} training average accuracy: {train_avg_accuracy*100 :7.3f}%')
         print(
             f'epoch: {i + 1:2} validation loss: {valid_loss:10.8f} validation accuracy: {tst_corr.item() * 100 / len(x_test):7.3f}%')
         print(
-           f'validation kappa: {test_kappa:7.3f} validation average accuracy: {test_avg_accuracy:7.3f}%')
+           f'validation kappa: {test_kappa:7.3f} validation average accuracy: {test_avg_accuracy*100 :7.3f}%')
         # clear lists to track next epoch
         train_losses = []
         test_losses = []
