@@ -15,9 +15,9 @@ from utils.avg_accuracy import get_avg_accuracy
 
 from sklearn.metrics import cohen_kappa_score
 
-path_data = "/data/lcz42_votes/data/"
+#path_data = "/data/lcz42_votes/data/"
 #path_data = "E:/Dateien/LCZ Votes/"
-#path_data = "D:/Data/LCZ_Votes/"
+path_data = "D:/Data/LCZ_Votes/"
 
 train_data = h5py.File(path_data + "train_data.h5",'r')
 x_train = np.array(train_data.get("x"))
@@ -42,12 +42,12 @@ class_weights = [193.89322917, 7.76705612, 32.68437226, 58.85770751, 7.02471931,
                  4.09678662, 28.23473644, 7.89889667, 71.31704981, 24.90133779,
                  3.29694903, 6.33390047, 62.40989103, 1.50365538, 53.41104735,
                  84.70420933, 1.]
-class_weights = torch.FloatTensor(class_weights).cuda()
-#class_weights = torch.FloatTensor(class_weights)
+#class_weights = torch.FloatTensor(class_weights).cuda()
+class_weights = torch.FloatTensor(class_weights)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = resnet18(n_input_channel, n_class).to(device)
-model = model.cuda()
+#model = model.cuda()
 
 # Testing shuffle settings
 torch.manual_seed(42)
@@ -85,8 +85,8 @@ def train_model(model, batch_size, patience, n_epochs):
 
     train_losses = []
     test_losses = []
-    train_correct = []
-    test_correct = []
+    #train_correct = []
+    #test_correct = []
     train_kappa = []
     test_kappa = []
     avg_train_losses = []
@@ -114,8 +114,8 @@ def train_model(model, batch_size, patience, n_epochs):
             loss = criterion(y_pred, torch.max(Y_train, 1)[1])
 
             # Tally the number of correct predictions
-            actual = torch.max(Y_train, 1)[1]
-            predicted = torch.max(y_pred.data, 1)[1]
+            actual = torch.max(Y_train, 1)[1] + 1
+            predicted = torch.max(y_pred.data, 1)[1] + 1
             batch_corr = (predicted == actual).sum()
             trn_corr += batch_corr
             # compute kappa
@@ -133,7 +133,7 @@ def train_model(model, batch_size, patience, n_epochs):
             scheduler.step()
 
             train_losses.append(loss.item())
-            train_correct.append(trn_corr)
+            #train_correct.append(trn_corr)
 
         model.eval()
 
@@ -150,8 +150,8 @@ def train_model(model, batch_size, patience, n_epochs):
                 loss = criterion(y_val, torch.max(Y_test, 1)[1])
 
                 # Tally the number of correct predictions
-                actual = torch.max(Y_test, 1)[1]
-                predicted = torch.max(y_val.data, 1)[1]
+                actual = torch.max(Y_test, 1)[1] + 1
+                predicted = torch.max(y_val.data, 1)[1] + 1
                 batch_corr = (predicted == actual).sum()
                 tst_corr += batch_corr
                 # Compute kappa
@@ -162,7 +162,7 @@ def train_model(model, batch_size, patience, n_epochs):
                 running_label_table_test = get_avg_accuracy(actual, predicted, running_label_table_test)
 
                 test_losses.append(loss.item())
-                test_correct.append(tst_corr)
+                #test_correct.append(tst_corr)
 
         # calculate average loss over an epoch
         train_loss = np.average(train_losses)
@@ -181,7 +181,7 @@ def train_model(model, batch_size, patience, n_epochs):
         print(
             f'epoch: {i + 1:2} validation loss: {valid_loss:10.8f} validation accuracy: {tst_corr.item() * 100 / len(x_test):7.3f}%')
         print(
-           f'validation kappa: {test_kappa:7.3f} training average accuracy: {test_avg_accuracy:7.3f}%')
+           f'validation kappa: {test_kappa:7.3f} validation average accuracy: {test_avg_accuracy:7.3f}%')
         # clear lists to track next epoch
         train_losses = []
         test_losses = []
