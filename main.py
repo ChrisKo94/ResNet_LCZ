@@ -60,9 +60,9 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.001
+learning_rate = 0.01
 patience = 20
-batch_size = 256
+batch_size = 512
 
 PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_weightdecay"
 
@@ -79,7 +79,7 @@ init_label_table = pd.DataFrame({"class":np.arange(1,18), "correct_sum":np.zeros
 
 optimizer = optim.Adam(params = model.parameters(), lr = learning_rate)
 criterion = nn.CrossEntropyLoss(weight=class_weights)
-scheduler = StepLR(optimizer, step_size=2, gamma=0.8)
+scheduler = StepLR(optimizer, step_size=2, gamma=0.85)
 
 def train_model(model, batch_size, patience, n_epochs):
 
