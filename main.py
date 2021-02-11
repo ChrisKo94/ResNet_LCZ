@@ -197,6 +197,8 @@ def train_model(model, batch_size, patience, n_epochs):
         test_losses = []
         train_kappa = []
         test_kappa = []
+        train_avg_accuracy = []
+        test_avg_accuracy = []
 
         early_stopping(valid_loss, model)
 
