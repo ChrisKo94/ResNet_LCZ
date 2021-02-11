@@ -15,9 +15,9 @@ from utils.avg_accuracy import get_avg_accuracy
 
 from sklearn.metrics import cohen_kappa_score
 
-#path_data = "/data/lcz42_votes/data/"
+path_data = "/data/lcz42_votes/data/"
 #path_data = "E:/Dateien/LCZ Votes/"
-path_data = "D:/Data/LCZ_Votes/"
+#path_data = "D:/Data/LCZ_Votes/"
 
 train_data = h5py.File(path_data + "train_data.h5",'r')
 x_train = np.array(train_data.get("x"))
@@ -42,12 +42,12 @@ class_weights = [193.89322917, 7.76705612, 32.68437226, 58.85770751, 7.02471931,
                  4.09678662, 28.23473644, 7.89889667, 71.31704981, 24.90133779,
                  3.29694903, 6.33390047, 62.40989103, 1.50365538, 53.41104735,
                  84.70420933, 1.]
-#class_weights = torch.FloatTensor(class_weights).cuda()
-class_weights = torch.FloatTensor(class_weights)
+class_weights = torch.FloatTensor(class_weights).cuda()
+#class_weights = torch.FloatTensor(class_weights)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = resnet18(n_input_channel, n_class).to(device)
-#model = model.cuda()
+model = model.cuda()
 
 # Testing shuffle settings
 torch.manual_seed(42)
