@@ -42,12 +42,17 @@ class_weights = [193.89322917, 7.76705612, 32.68437226, 58.85770751, 7.02471931,
                  4.09678662, 28.23473644, 7.89889667, 71.31704981, 24.90133779,
                  3.29694903, 6.33390047, 62.40989103, 1.50365538, 53.41104735,
                  84.70420933, 1.]
-class_weights = torch.FloatTensor(class_weights).cuda()
-#class_weights = torch.FloatTensor(class_weights)
+
+if torch.cuda.is_available():
+    class_weights = torch.FloatTensor(class_weights).cuda()
+else:
+    class_weights = torch.FloatTensor(class_weights)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = resnet18(n_input_channel, n_class).to(device)
-model = model.cuda()
+
+if torch.cuda.is_available():
+    model = model.cuda()
 
 # Testing shuffle settings
 torch.manual_seed(42)
@@ -176,6 +181,8 @@ def train_model(model, batch_size, patience, n_epochs):
         test_avg_accuracy = np.mean(running_label_table_test["correct_sum"] / label_table_test["sum"])
 
         print(running_label_table_test)
+        print(label_table_test)
+        print(test_avg_accuracy)
 
         print(
             f'epoch: {i + 1:2} training loss: {train_loss:10.8f} training accuracy: {trn_corr.item() * 100 / len(x_train) :7.3f}%')
