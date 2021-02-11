@@ -77,10 +77,10 @@ test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size = 
 
 label_table_train = (np.argmax(y_train, axis=1) + 1).numpy()
 label_table_train = pd.DataFrame(np.transpose(np.unique(label_table_train, return_counts = True)),
-                           columns = ["class", "sum"])
+                           columns = ["class", "sum"]).astype(float)
 label_table_test = (np.argmax(y_test, axis=1) + 1).numpy()
 label_table_test = pd.DataFrame(np.transpose(np.unique(label_table_test, return_counts = True)),
-                           columns = ["class", "sum"])
+                           columns = ["class", "sum"]).astype(float)
 init_label_table = pd.DataFrame({"class":np.arange(1,18), "correct_sum":np.zeros(17)})
 
 optimizer = optim.Adam(params = model.parameters(), lr = learning_rate)
