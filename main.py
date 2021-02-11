@@ -18,7 +18,7 @@ import statistics
 
 path_data = "/data/lcz42_votes/data/"
 # path_data = "E:/Dateien/LCZ Votes/"
-# path_data = "D:/Data/LCZ_Votes/"
+#path_data = "D:/Data/LCZ_Votes/"
 
 train_data = h5py.File(path_data + "train_data.h5", 'r')
 x_train = np.array(train_data.get("x"))
@@ -173,17 +173,17 @@ def train_model(model, batch_size, patience, n_epochs):
                 test_losses.append(loss.item())
                 # test_correct.append(tst_corr)
 
-        # calculate average loss over an epoch
-        train_loss = np.average(train_losses)
-        valid_loss = np.average(test_losses)
-        avg_train_losses.append(train_loss)
-        avg_valid_losses.append(valid_loss)
-        train_kappa = np.mean(train_kappa)
-        test_kappa = np.mean(test_kappa)
-        train_acc_diff = running_label_table_train["correct_sum"] / label_table_train["sum"]
-        train_avg_accuracy = np.mean(train_acc_diff)
-        test_acc_diff = running_label_table_test["correct_sum"] / label_table_test["sum"]
-        test_avg_accuracy = np.mean(test_acc_diff)
+            # calculate average loss over an epoch
+            train_loss = np.average(train_losses)
+            valid_loss = np.average(test_losses)
+            avg_train_losses.append(train_loss)
+            avg_valid_losses.append(valid_loss)
+            train_kappa = np.mean(train_kappa)
+            test_kappa = np.mean(test_kappa)
+            train_acc_diff = running_label_table_train["correct_sum"] / label_table_train["sum"]
+            train_avg_accuracy = np.mean(train_acc_diff)
+            test_acc_diff = running_label_table_test["correct_sum"] / label_table_test["sum"]
+            test_avg_accuracy = np.mean(test_acc_diff)
 
         print(running_label_table_test)
         print(label_table_test)
