@@ -17,10 +17,10 @@ from sklearn.metrics import cohen_kappa_score
 import statistics
 
 path_data = "/data/lcz42_votes/data/"
-#path_data = "E:/Dateien/LCZ Votes/"
-#path_data = "D:/Data/LCZ_Votes/"
+# path_data = "E:/Dateien/LCZ Votes/"
+# path_data = "D:/Data/LCZ_Votes/"
 
-train_data = h5py.File(path_data + "train_data.h5",'r')
+train_data = h5py.File(path_data + "train_data.h5", 'r')
 x_train = np.array(train_data.get("x"))
 # Switch dimensions of tensor to suit Pytorch
 x_train = np.rollaxis(x_train, 3, 1)
@@ -28,7 +28,7 @@ x_train = torch.from_numpy(x_train)
 y_train = np.array(train_data.get("y"))
 y_train = torch.from_numpy(y_train)
 
-test_data = h5py.File(path_data + "test_data.h5",'r')
+test_data = h5py.File(path_data + "test_data.h5", 'r')
 x_test = np.array(test_data.get("x"))
 # Switch dimensions of tensor to suit Pytorch
 x_test = np.rollaxis(x_test, 3, 1)
@@ -72,44 +72,44 @@ batch_size = 128
 
 PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_cyclicweightdecay"
 
-train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size = batch_size, shuffle=True)
-test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size = batch_size, shuffle=False)
+train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size=batch_size, shuffle=True)
+test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size=batch_size, shuffle=False)
 
 label_table_train = (np.argmax(y_train, axis=1) + 1).numpy()
-label_table_train = pd.DataFrame(np.transpose(np.unique(label_table_train, return_counts = True)),
-                           columns = ["class", "sum"]).astype(float)
+label_table_train = pd.DataFrame(np.transpose(np.unique(label_table_train, return_counts=True)),
+                                 columns=["class", "sum"]).astype(float)
 label_table_test = (np.argmax(y_test, axis=1) + 1).numpy()
-label_table_test = pd.DataFrame(np.transpose(np.unique(label_table_test, return_counts = True)),
-                           columns = ["class", "sum"]).astype(float)
-init_label_table = pd.DataFrame({"class":np.arange(1,18), "correct_sum":np.zeros(17)})
+label_table_test = pd.DataFrame(np.transpose(np.unique(label_table_test, return_counts=True)),
+                                columns=["class", "sum"]).astype(float)
+init_label_table = pd.DataFrame({"class": np.arange(1, 18), "correct_sum": np.zeros(17)})
 
-optimizer = optim.Adam(params = model.parameters(), lr = learning_rate)
+optimizer = optim.Adam(params=model.parameters(), lr=learning_rate)
 criterion = nn.CrossEntropyLoss(weight=class_weights)
 scheduler = CyclicLR(optimizer, base_lr=0.001, max_lr=0.01, mode='exp_range', gamma=0.9,
                      cycle_momentum=False)
 
-def train_model(model, batch_size, patience, n_epochs):
 
+def train_model(model, batch_size, patience, n_epochs):
     train_losses = []
     test_losses = []
-    #train_correct = []
-    #test_correct = []
+    # train_correct = []
+    # test_correct = []
     train_kappa = []
     test_kappa = []
     avg_train_losses = []
     avg_valid_losses = []
-    train_avg_accuracy = []
-    test_avg_accuracy = []
 
     early_stopping = EarlyStopping(patience=patience, verbose=True, path=PATH + 'checkpoint.pt')
 
     for i in range(n_epochs):
-        torch.manual_seed(42 + 42*i)
-        torch.cuda.manual_seed(42 + 42*i)
+        torch.manual_seed(42 + 42 * i)
+        torch.cuda.manual_seed(42 + 42 * i)
         trn_corr = 0
         tst_corr = 0
         running_label_table_train = init_label_table
         running_label_table_test = init_label_table
+        train_acc_diff = []
+        test_avg_accuracy = []
 
         model.train()
         # Run the training batches
@@ -142,7 +142,7 @@ def train_model(model, batch_size, patience, n_epochs):
             scheduler.step()
 
             train_losses.append(loss.item())
-            #train_correct.append(trn_corr)
+            # train_correct.append(trn_corr)
 
         model.eval()
 
@@ -171,7 +171,7 @@ def train_model(model, batch_size, patience, n_epochs):
                 running_label_table_test = get_avg_accuracy(actual, predicted, running_label_table_test)
 
                 test_losses.append(loss.item())
-                #test_correct.append(tst_corr)
+                # test_correct.append(tst_corr)
 
         # calculate average loss over an epoch
         train_loss = np.average(train_losses)
@@ -180,30 +180,31 @@ def train_model(model, batch_size, patience, n_epochs):
         avg_valid_losses.append(valid_loss)
         train_kappa = np.mean(train_kappa)
         test_kappa = np.mean(test_kappa)
-        train_avg_accuracy = np.mean(running_label_table_train["correct_sum"] / label_table_train["sum"])
-        test_avg_accuracy = np.mean(running_label_table_test["correct_sum"] / label_table_test["sum"])
+        train_acc_diff = running_label_table_train["correct_sum"] / label_table_train["sum"]
+        train_avg_accuracy = np.mean(train_acc_diff)
+        test_acc_diff = running_label_table_test["correct_sum"] / label_table_test["sum"]
+        test_avg_accuracy = np.mean(test_acc_diff)
 
         print(running_label_table_test)
         print(label_table_test)
+        print(test_acc_diff)
         print(test_avg_accuracy)
-        pseudo = statistics.mean(running_label_table_test["correct_sum"] / label_table_test["sum"])
-        print(pseudo)
 
         print(
             f'epoch: {i + 1:2} training loss: {train_loss:10.8f} training accuracy: {trn_corr.item() * 100 / len(x_train) :7.3f}%')
         print(
-           f'training kappa: {train_kappa:7.3f} training average accuracy: {train_avg_accuracy*100 :7.3f}%')
+            f'training kappa: {train_kappa:7.3f} training average accuracy: {train_avg_accuracy * 100 :7.3f}%')
         print(
             f'epoch: {i + 1:2} validation loss: {valid_loss:10.8f} validation accuracy: {tst_corr.item() * 100 / len(x_test):7.3f}%')
         print(
-           f'validation kappa: {test_kappa:7.3f} validation average accuracy: {test_avg_accuracy*100 :7.3f}%')
+            f'validation kappa: {test_kappa:7.3f} validation average accuracy: {test_avg_accuracy * 100 :7.3f}%')
         # clear lists to track next epoch
         train_losses = []
         test_losses = []
         train_kappa = []
         test_kappa = []
-        train_avg_accuracy = []
-        test_avg_accuracy = []
+        train_acc_diff = []
+        test_acc_diff = []
 
         early_stopping(valid_loss, model)
 
@@ -215,6 +216,7 @@ def train_model(model, batch_size, patience, n_epochs):
     model.load_state_dict(torch.load(PATH + '_checkpoint.pt'))
 
     return model, avg_train_losses, avg_valid_losses
+
 
 start_time = time.time()
 model, train_loss, valid_loss = train_model(model, batch_size, patience, n_epochs)
