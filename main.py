@@ -15,9 +15,9 @@ from utils.avg_accuracy import get_avg_accuracy
 
 from sklearn.metrics import cohen_kappa_score
 
-path_data = "/data/lcz42_votes/data/"
+#path_data = "/data/lcz42_votes/data/"
 #path_data = "E:/Dateien/LCZ Votes/"
-#path_data = "D:/Data/LCZ_Votes/"
+path_data = "D:/Data/LCZ_Votes/"
 
 train_data = h5py.File(path_data + "train_data.h5",'r')
 x_train = np.array(train_data.get("x"))
@@ -42,12 +42,12 @@ class_weights = [193.89322917, 7.76705612, 32.68437226, 58.85770751, 7.02471931,
                  4.09678662, 28.23473644, 7.89889667, 71.31704981, 24.90133779,
                  3.29694903, 6.33390047, 62.40989103, 1.50365538, 53.41104735,
                  84.70420933, 1.]
-class_weights = torch.FloatTensor(class_weights).cuda()
-#class_weights = torch.FloatTensor(class_weights)
+#class_weights = torch.FloatTensor(class_weights).cuda()
+class_weights = torch.FloatTensor(class_weights)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = resnet18(n_input_channel, n_class).to(device)
-model = model.cuda()
+#model = model.cuda()
 
 # Testing shuffle settings
 torch.manual_seed(42)
@@ -60,7 +60,7 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.01
+learning_rate = 0.001
 patience = 20
 batch_size = 128
 
@@ -174,6 +174,8 @@ def train_model(model, batch_size, patience, n_epochs):
         test_kappa = np.mean(test_kappa)
         train_avg_accuracy = np.mean(running_label_table_train["correct_sum"] / label_table_train["sum"])
         test_avg_accuracy = np.mean(running_label_table_test["correct_sum"] / label_table_test["sum"])
+
+        print(running_label_table_test)
 
         print(
             f'epoch: {i + 1:2} training loss: {train_loss:10.8f} training accuracy: {trn_corr.item() * 100 / len(x_train) :7.3f}%')
