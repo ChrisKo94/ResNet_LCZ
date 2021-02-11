@@ -14,6 +14,7 @@ from utils.early_stopping import EarlyStopping
 from utils.avg_accuracy import get_avg_accuracy
 
 from sklearn.metrics import cohen_kappa_score
+import statistics
 
 path_data = "/data/lcz42_votes/data/"
 #path_data = "E:/Dateien/LCZ Votes/"
@@ -97,6 +98,8 @@ def train_model(model, batch_size, patience, n_epochs):
     test_kappa = []
     avg_train_losses = []
     avg_valid_losses = []
+    train_avg_accuracy = []
+    test_avg_accuracy = []
 
     early_stopping = EarlyStopping(patience=patience, verbose=True, path=PATH + 'checkpoint.pt')
 
@@ -183,6 +186,8 @@ def train_model(model, batch_size, patience, n_epochs):
         print(running_label_table_test)
         print(label_table_test)
         print(test_avg_accuracy)
+        pseudo = statistics.mean(running_label_table_test["correct_sum"] / label_table_test["sum"])
+        print(pseudo)
 
         print(
             f'epoch: {i + 1:2} training loss: {train_loss:10.8f} training accuracy: {trn_corr.item() * 100 / len(x_train) :7.3f}%')
