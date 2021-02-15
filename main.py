@@ -90,9 +90,9 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.001
+learning_rate = 0.0001
 patience = 20
-batch_size = 128
+batch_size = 256
 
 PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_cyclicweightdecay"
 
@@ -109,7 +109,7 @@ init_label_table = pd.DataFrame({"class": np.arange(1, 18), "correct_sum": np.ze
 
 optimizer = optim.Adam(params=model.parameters(), lr=learning_rate)
 criterion = nn.CrossEntropyLoss(weight=class_weights)
-scheduler = CyclicLR(optimizer, base_lr=0.001, max_lr=0.01, mode='exp_range', gamma=0.9,
+scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.01, mode='exp_range', gamma=0.9,
                      cycle_momentum=False)
 
 
@@ -123,7 +123,7 @@ def train_model(model, batch_size, patience, n_epochs):
     avg_train_losses = []
     avg_valid_losses = []
 
-    early_stopping = EarlyStopping(patience=patience, verbose=True, path=PATH + 'checkpoint.pt')
+    early_stopping = EarlyStopping(patience=patience, verbose=True, path=PATH + '_checkpoint.pt')
 
     for i in range(n_epochs):
         torch.manual_seed(42 + 42 * i)
