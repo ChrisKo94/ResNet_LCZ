@@ -20,6 +20,11 @@ path_data = "/data/lcz42_votes/data/"
 # path_data = "E:/Dateien/LCZ Votes/"
 #path_data = "D:/Data/LCZ_Votes/"
 
+mode = "all"
+#mode = "urban"
+
+entropy_quantile = 0 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
+
 train_data = h5py.File(path_data + "train_data.h5", 'r')
 x_train = np.array(train_data.get("x"))
 # Switch dimensions of tensor to suit Pytorch
@@ -36,13 +41,32 @@ x_test = torch.from_numpy(x_test)
 y_test = np.array(test_data.get("y"))
 y_test = torch.from_numpy(y_test)
 
+if entropy_quantile > 0 and mode == "urban":
+    entropies = h5py.File(path_data + "entropies_train.h5", 'r')
+    entropies = pd.DataFrame({"entropies":np.array(entropies.get("entropies_train")),
+                              "order": np.arange(len(y_train))})
+    entropies = entropies.sort_values(by=['entropies'])
+    ## Order training data accordingly
+    idx = np.array(entropies["order"])
+    x_train = x_train[idx, :, :, :]
+    y_train = y_train[idx]
+    ## Cut off at given quantile
+
+if mode == "urban":
+    indices_train = np.where((torch.max(y_train, 1)[1] + 1).numpy() < 11)[0]
+    indices_test = np.where((torch.max(y_test, 1)[1] + 1).numpy() < 11)[0]
+    x_train = x_train[indices_train,:,:,:]
+    y_train = y_train[indices_train]
+    x_test = x_test[indices_test,:,:,:]
+    y_test = y_test[indices_test]
+
 n_input_channel = 10
 n_class = 17
 
-class_weights = [193.89322917, 7.76705612, 32.68437226, 58.85770751, 7.02471931,
-                 4.09678662, 28.23473644, 7.89889667, 71.31704981, 24.90133779,
-                 3.29694903, 6.33390047, 62.40989103, 1.50365538, 53.41104735,
-                 84.70420933, 1.]
+class_weights = [193.22916667, 7.76556777, 34.4795539, 58.47123719, 6.96909928,
+                 4.09537477, 26.58545324,  7.85684032, 62.7749577, 24.81605351,
+                 3.27666151, 6.3020214, 62.19614417, 1.4974773, 52.69886364,
+                 83.74717833, 1.]
 
 if torch.cuda.is_available():
     class_weights = torch.FloatTensor(class_weights).cuda()
