@@ -209,11 +209,6 @@ def train_model(model, batch_size, patience, n_epochs):
             test_acc_diff = running_label_table_test["correct_sum"] / label_table_test["sum"]
             test_avg_accuracy = np.mean(test_acc_diff)
 
-        print(running_label_table_test)
-        print(label_table_test)
-        print(test_acc_diff)
-        print(test_avg_accuracy)
-
         print(
             f'epoch: {i + 1:2} training loss: {train_loss:10.8f} training accuracy: {trn_corr.item() * 100 / len(x_train) :7.3f}%')
         print(
