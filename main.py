@@ -146,7 +146,7 @@ else:
     criterion = nn.CrossEntropyLoss()
 
 if lr_decay == "cycle":
-    scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.01, mode='exp_range', gamma=0.9,
+    scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.001, mode='exp_range', gamma=0.9,
                          cycle_momentum=False)
 else:
     scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
