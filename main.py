@@ -25,7 +25,7 @@ else:
 
 #mode = "all"
 mode = "urban"
-weights = False
+weights = True
 lr_decay = "cycle"
 #lr_decay = "step"
 
