@@ -29,7 +29,7 @@ weights = False
 lr_decay = "cycle"
 #lr_decay = "step"
 
-entropy_quantile = 0 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
+entropy_quantile = 0.2 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
 train_data = h5py.File(path_data + "train_data.h5", 'r')
 x_train = np.array(train_data.get("x"))
@@ -127,6 +127,9 @@ else:
 if mode == "urban":
     PATH = PATH + "_urban"
 
+if entropy_quantile > 0:
+    PATH = PATH + "_most_certain_" + entropy_quantile
+
 train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size=batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size=batch_size, shuffle=False)
 
@@ -146,7 +149,7 @@ else:
     criterion = nn.CrossEntropyLoss()
 
 if lr_decay == "cycle":
-    scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.0001, mode='exp_range', gamma=0.9,
+    scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.001, mode='exp_range', gamma=0.9,
                          cycle_momentum=False)
 else:
     scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
