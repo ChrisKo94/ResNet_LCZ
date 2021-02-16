@@ -114,9 +114,9 @@ if weights == True:
     criterion = nn.CrossEntropyLoss(weight=class_weights)
 else:
     criterion = nn.CrossEntropyLoss()
-scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.001, mode='exp_range', gamma=0.9,
-                     cycle_momentum=False)
-#scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
+#scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.001, mode='exp_range', gamma=0.9,
+#                     cycle_momentum=False)
+scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
 
 def train_model(model, batch_size, patience, n_epochs):
     train_losses = []
