@@ -28,7 +28,7 @@ mode = "urban"
 weights = False
 lr_decay = "cycle"
 #lr_decay = "step"
-uncertain = False
+uncertain = True
 
 entropy_quantile = 0.7 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
