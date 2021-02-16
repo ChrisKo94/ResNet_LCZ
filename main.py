@@ -25,7 +25,7 @@ else:
 
 mode = "all"
 #mode = "urban"
-weights = True
+weights = False
 
 entropy_quantile = 0 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
@@ -45,9 +45,20 @@ x_test = torch.from_numpy(x_test)
 y_test = np.array(test_data.get("y"))
 y_test = torch.from_numpy(y_test)
 
+if mode == "urban":
+    indices_train = np.where((torch.max(y_train, 1)[1] + 1).numpy() < 11)[0]
+    indices_test = np.where((torch.max(y_test, 1)[1] + 1).numpy() < 11)[0]
+    x_train = x_train[indices_train,:,:,:]
+    y_train = y_train[indices_train]
+    x_test = x_test[indices_test,:,:,:]
+    y_test = y_test[indices_test]
+
 if entropy_quantile > 0 and mode == "urban":
     entropies = h5py.File(path_data + "entropies_train.h5", 'r')
-    entropies = pd.DataFrame({"entropies":np.array(entropies.get("entropies_train")),
+    entropies_train = np.array(entropies.get("entropies_train"))
+    entropies_train = entropies_train[indices_train]
+    entropies_train[np.where(np.isnan(entropies_train))] = 0
+    entropies = pd.DataFrame({"entropies": entropies_train,
                               "order": np.arange(len(y_train))})
     entropies = entropies.sort_values(by=['entropies'])
     ## Order training data accordingly
@@ -55,6 +66,7 @@ if entropy_quantile > 0 and mode == "urban":
     x_train = x_train[idx, :, :, :]
     y_train = y_train[idx]
     ## Cut off at given quantile
+
 
 if mode == "urban":
     indices_train = np.where((torch.max(y_train, 1)[1] + 1).numpy() < 11)[0]
@@ -103,7 +115,7 @@ y_test = y_test[idx].view(y_test.size())
 n_epochs = 100
 learning_rate = 0.0001
 patience = 20
-batch_size = 256
+batch_size = 128
 
 PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_cyclicweightdecay"
 
@@ -124,9 +136,9 @@ if weights == True:
     criterion = nn.CrossEntropyLoss(weight=class_weights)
 else:
     criterion = nn.CrossEntropyLoss()
-#scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.001, mode='exp_range', gamma=0.9,
-#                     cycle_momentum=False)
-scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
+scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.01, mode='exp_range', gamma=0.9,
+                     cycle_momentum=False)
+#scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
 
 def train_model(model, batch_size, patience, n_epochs):
     train_losses = []
