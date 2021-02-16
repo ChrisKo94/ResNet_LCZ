@@ -30,7 +30,7 @@ lr_decay = "cycle"
 #lr_decay = "step"
 uncertain = False
 
-entropy_quantile = 0.5 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
+entropy_quantile = 0.7 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
 train_data = h5py.File(path_data + "train_data.h5", 'r')
 x_train = np.array(train_data.get("x"))
