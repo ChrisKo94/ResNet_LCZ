@@ -115,7 +115,7 @@ y_test = y_test[idx].view(y_test.size())
 n_epochs = 100
 learning_rate = 0.000001
 patience = 20
-batch_size = 128
+batch_size = 126
 
 if lr_decay == "cycle":
     PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_cyclicweightdecay"
