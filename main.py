@@ -28,7 +28,7 @@ mode = "urban"
 weights = False
 lr_decay = "cycle"
 
-entropy_quantile = 0.5 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
+entropy_quantile = 0 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
 train_data = h5py.File(path_data + "train_data.h5", 'r')
 x_train = np.array(train_data.get("x"))
@@ -122,6 +122,9 @@ if lr_decay == "cycle":
     PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_cyclicweightdecay"
 else:
     PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_stepweightdecay"
+
+if mode == "urban":
+    PATH = PATH + "_urban"
 
 train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size=batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size=batch_size, shuffle=False)
