@@ -28,6 +28,7 @@ mode = "urban"
 weights = False
 lr_decay = "cycle"
 #lr_decay = "step"
+uncertain = True
 
 entropy_quantile = 0.2 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
@@ -61,9 +62,13 @@ if entropy_quantile > 0 and mode == "urban":
     entropies_train = np.array(entropies.get("entropies_train"))
     entropies_train = entropies_train[indices_train]
     entropies_train[np.where(np.isnan(entropies_train))] = 0
+
     entropies = pd.DataFrame({"entropies": entropies_train,
                               "order": np.arange(len(y_train))})
-    entropies = entropies.sort_values(by=['entropies'])
+    if uncertain == False:
+        entropies = entropies.sort_values(by=['entropies'])
+    else:
+        entropies = entropies.sort_values(by=['entropies'], ascending=False)
     ## Order training data accordingly
     idx = np.array(entropies["order"])
     ## Cut off at given quantile
@@ -121,7 +126,10 @@ if mode == "urban":
     PATH = PATH + "_urban"
 
 if entropy_quantile > 0:
-    PATH = PATH + "_most_certain_" + str(entropy_quantile)
+    if uncertain == True:
+        PATH = PATH + "_most_uncertain_" + str(entropy_quantile)
+    else:
+        PATH = PATH + "_most_certain_" + str(entropy_quantile)
 
 train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size=batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size=batch_size, shuffle=False)
