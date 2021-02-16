@@ -113,7 +113,7 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.000001
+learning_rate = 0.0000001
 patience = 20
 batch_size = 126
 
@@ -153,7 +153,7 @@ else:
     criterion = nn.CrossEntropyLoss()
 
 if lr_decay == "cycle":
-    scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.00001, mode='exp_range', gamma=0.9,
+    scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.000001, mode='exp_range', gamma=0.9,
                          cycle_momentum=False)
 else:
     scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
