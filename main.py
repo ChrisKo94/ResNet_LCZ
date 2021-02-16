@@ -128,7 +128,7 @@ if mode == "urban":
     PATH = PATH + "_urban"
 
 if entropy_quantile > 0:
-    PATH = PATH + "_most_certain_" + entropy_quantile
+    PATH = PATH + "_most_certain_" + str(entropy_quantile)
 
 train_loader = torch.utils.data.DataLoader(Dataset(x_train, y_train), batch_size=batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(Dataset(x_test, y_test), batch_size=batch_size, shuffle=False)
