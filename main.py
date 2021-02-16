@@ -56,6 +56,7 @@ if mode == "urban":
     y_test = y_test[indices_test]
 
 if entropy_quantile > 0 and mode == "urban":
+    indices_train = np.where((torch.max(y_train, 1)[1] + 1).numpy() < 11)[0]
     entropies = h5py.File(path_data + "entropies_train.h5", 'r')
     entropies_train = np.array(entropies.get("entropies_train"))
     entropies_train = entropies_train[indices_train]
@@ -69,14 +70,6 @@ if entropy_quantile > 0 and mode == "urban":
     idx = idx[:np.floor(entropy_quantile * len(idx)).astype(int)]
     x_train = x_train[idx, :, :, :]
     y_train = y_train[idx]
-
-if mode == "urban":
-    indices_train = np.where((torch.max(y_train, 1)[1] + 1).numpy() < 11)[0]
-    indices_test = np.where((torch.max(y_test, 1)[1] + 1).numpy() < 11)[0]
-    x_train = x_train[indices_train,:,:,:]
-    y_train = y_train[indices_train]
-    x_test = x_test[indices_test,:,:,:]
-    y_test = y_test[indices_test]
 
 n_input_channel = 10
 if mode == "urban":
@@ -252,6 +245,9 @@ def train_model(model, batch_size, patience, n_epochs):
             train_avg_accuracy = np.mean(train_acc_diff)
             test_acc_diff = running_label_table_test["correct_sum"] / label_table_test["sum"]
             test_avg_accuracy = np.mean(test_acc_diff)
+
+        print(running_label_table_train)
+        print(running_label_table_test)
 
         print(
             f'epoch: {i + 1:2} training loss: {train_loss:10.8f} training accuracy: {trn_corr.item() * 100 / len(x_train) :7.3f}%')
