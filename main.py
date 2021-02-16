@@ -25,9 +25,9 @@ else:
 
 #mode = "all"
 mode = "urban"
-weights = True
-#lr_decay = "cycle"
-lr_decay = "step"
+weights = False
+lr_decay = "cycle"
+#lr_decay = "step"
 
 entropy_quantile = 0 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
@@ -115,7 +115,7 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.0001
+learning_rate = 0.00001
 patience = 20
 batch_size = 128
 
