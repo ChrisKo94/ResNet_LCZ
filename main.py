@@ -22,7 +22,7 @@ path_data = "/data/lcz42_votes/data/"
 
 mode = "all"
 #mode = "urban"
-weights = True
+weights = False
 
 entropy_quantile = 0 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
