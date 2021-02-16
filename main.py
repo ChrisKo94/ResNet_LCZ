@@ -22,6 +22,7 @@ path_data = "/data/lcz42_votes/data/"
 
 mode = "all"
 #mode = "urban"
+weights = True
 
 entropy_quantile = 0 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
@@ -90,9 +91,9 @@ y_test = y_test[idx].view(y_test.size())
 
 # set parameters
 n_epochs = 100
-learning_rate = 0.0001
+learning_rate = 0.001
 patience = 20
-batch_size = 128
+batch_size = 256
 
 PATH = "/data/lcz42_votes/ResNet_LCZ/ResNet18_b" + str(batch_size) + "_e_" + str(n_epochs) + "_cyclicweightdecay"
 
@@ -108,10 +109,14 @@ label_table_test = pd.DataFrame(np.transpose(np.unique(label_table_test, return_
 init_label_table = pd.DataFrame({"class": np.arange(1, 18), "correct_sum": np.zeros(17)})
 
 optimizer = optim.Adam(params=model.parameters(), lr=learning_rate)
-criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+if weights == True:
+    criterion = nn.CrossEntropyLoss(weight=class_weights)
+else:
+    criterion = nn.CrossEntropyLoss()
 #scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.01, mode='exp_range', gamma=0.9,
 #                     cycle_momentum=False)
-scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.8)
+scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
 
 def train_model(model, batch_size, patience, n_epochs):
     train_losses = []
