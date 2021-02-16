@@ -16,13 +16,16 @@ from utils.avg_accuracy import get_avg_accuracy
 from sklearn.metrics import cohen_kappa_score
 import statistics
 
-path_data = "/data/lcz42_votes/data/"
+if torch.cuda.is_available():
+    path_data = "/data/lcz42_votes/data/"
+else:
+    path_data = "D:/Data/LCZ_Votes/"
 # path_data = "E:/Dateien/LCZ Votes/"
-#path_data = "D:/Data/LCZ_Votes/"
+
 
 mode = "all"
 #mode = "urban"
-weights = False
+weights = True
 
 entropy_quantile = 0 # choose quantile of most certain images (w.r.t. voter entropy) for training, requires mode = "urban"
 
@@ -62,12 +65,19 @@ if mode == "urban":
     y_test = y_test[indices_test]
 
 n_input_channel = 10
-n_class = 17
+if mode == "urban":
+    n_class = 10
+else:
+    n_class = 17
 
-class_weights = [193.22916667, 7.76556777, 34.4795539, 58.47123719, 6.96909928,
-                 4.09537477, 26.58545324,  7.85684032, 62.7749577, 24.81605351,
-                 3.27666151, 6.3020214, 62.19614417, 1.4974773, 52.69886364,
-                 83.74717833, 1.]
+if mode == "urban":
+    class_weights = [47.18229167, 1.89618001, 8.41914498, 14.27738377, 1.70170001,
+                     1., 6.49158008, 1.91846675, 15.32825719, 6.05953177]
+else:
+    class_weights = [193.22916667, 7.76556777, 34.4795539, 58.47123719, 6.96909928,
+                     4.09537477, 26.58545324,  7.85684032, 62.7749577, 24.81605351,
+                     3.27666151, 6.3020214, 62.19614417, 1.4974773, 52.69886364,
+                     83.74717833, 1.]
 
 if torch.cuda.is_available():
     class_weights = torch.FloatTensor(class_weights).cuda()
