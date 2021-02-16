@@ -145,7 +145,7 @@ else:
     criterion = nn.CrossEntropyLoss()
 
 if lr_decay == "cycle":
-    scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.001, mode='exp_range', gamma=0.9,
+    scheduler = CyclicLR(optimizer, base_lr=learning_rate, max_lr=0.0001, mode='exp_range', gamma=0.9,
                          cycle_momentum=False)
 else:
     scheduler =optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.8)
@@ -245,9 +245,6 @@ def train_model(model, batch_size, patience, n_epochs):
             train_avg_accuracy = np.mean(train_acc_diff)
             test_acc_diff = running_label_table_test["correct_sum"] / label_table_test["sum"]
             test_avg_accuracy = np.mean(test_acc_diff)
-
-        print(running_label_table_train)
-        print(running_label_table_test)
 
         print(
             f'epoch: {i + 1:2} training loss: {train_loss:10.8f} training accuracy: {trn_corr.item() * 100 / len(x_train) :7.3f}%')
